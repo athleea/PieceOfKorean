@@ -83,8 +83,8 @@ function renderCurrentGuess() {
 
     for (let i = 0; i < game.wordLength; i++) {
         const cell = document.createElement('div');
-        // Base styling - more prominent shadow and border
-        cell.className = 'w-14 h-14 md:w-16 md:h-16 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-2xl flex items-center justify-center text-3xl font-black text-slate-800 dark:text-white transition-all duration-200 cursor-pointer select-none shadow-md hover:shadow-lg hover:-translate-y-0.5';
+        // Base styling - refined sizes for better mobile fitting
+        cell.className = 'w-10 h-10 xs:w-12 xs:h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-xl md:rounded-2xl flex items-center justify-center text-xl md:text-3xl font-black text-slate-800 dark:text-white transition-all duration-200 cursor-pointer select-none shadow-md hover:shadow-lg hover:-translate-y-0.5';
 
         // Empty but active slot styling
         if (!game.currentGuess[i]) {
@@ -185,7 +185,7 @@ function updatePlayerBoards() {
             if (hint === 'correct') bgColor = 'bg-correct';
             if (hint === 'present') bgColor = 'bg-present';
 
-            cell.className = `w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white shadow-sm ${bgColor}`;
+            cell.className = `w-7 h-7 md:w-10 md:h-10 rounded-lg md:rounded-xl flex items-center justify-center font-bold text-white text-xs md:text-base shadow-sm ${bgColor}`;
             cell.textContent = char === ' ' ? '' : char;
             row.appendChild(cell);
         });
@@ -197,7 +197,7 @@ function updatePlayerBoards() {
     player2AttemptsEl.innerHTML = '';
     game.attempts[1].forEach(attempt => {
         const row = document.createElement('div');
-        row.className = 'flex gap-2 justify-center mb-2';
+        row.className = 'flex gap-1.5 md:gap-2 justify-center mb-1.5 md:mb-2';
 
         attempt.word.split('').forEach((char, i) => {
             const cell = document.createElement('div');
@@ -206,7 +206,7 @@ function updatePlayerBoards() {
             if (hint === 'correct') bgColor = 'bg-correct';
             if (hint === 'present') bgColor = 'bg-present';
 
-            cell.className = `w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white shadow-sm ${bgColor}`;
+            cell.className = `w-7 h-7 md:w-10 md:h-10 rounded-lg md:rounded-xl flex items-center justify-center font-bold text-white text-xs md:text-base shadow-sm ${bgColor}`;
             cell.textContent = char === ' ' ? '' : char;
             row.appendChild(cell);
         });
