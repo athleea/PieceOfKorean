@@ -5,7 +5,6 @@ class KoreanWordGame {
     constructor() {
         this.targetWord = '';
         this.currentPlayer = 1;
-        this.maxAttempts = 6;
         this.attempts = [[], []]; // attempts[0] for player 1, attempts[1] for player 2
         this.currentGuess = [];
         this.gameOver = false;
@@ -86,20 +85,8 @@ class KoreanWordGame {
             return { won: true, hints: hints };
         }
 
-        // Check if max attempts reached
-        if (this.attempts[playerIndex].length >= this.maxAttempts) {
-            // Switch player
-            this.switchPlayer();
-
-            // Check if both players exhausted attempts
-            if (this.attempts[0].length >= this.maxAttempts && this.attempts[1].length >= this.maxAttempts) {
-                this.gameOver = true;
-                return { gameOver: true, hints: hints };
-            }
-        } else {
-            // Switch player
-            this.switchPlayer();
-        }
+        // Switch player
+        this.switchPlayer();
 
         // Clear current guess
         this.clearGuess();
