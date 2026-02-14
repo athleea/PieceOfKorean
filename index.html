@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>한글 단어 퍼즐 게임</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'game-bg': '#f0f4f8',
+            'game-dark-bg': '#0f172a',
+            'correct': '#22c55e',
+            'present': '#eab308',
+            'absent': '#94a3b8',
+            'primary': '#6366f1',
+          },
+          fontFamily: {
+            sans: ['Noto Sans KR', 'sans-serif'],
+          }
+        }
+      }
+    }
+
+    // Immediate theme check to prevent flash
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
+</head>
+
+<body
+  class="bg-game-bg dark:bg-game-dark-bg min-h-full font-sans text-slate-800 dark:text-slate-100 p-4 md:p-8 transition-colors duration-300">
+  <div class="max-w-screen-2xl mx-auto">
+    <!-- Header -->
+    <header class="relative text-center mb-8">
+      <div class="absolute right-0 top-0">
+        <button id="themeToggle"
+          class="p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border-2 border-slate-100 dark:border-slate-700 hover:scale-110 active:scale-95 transition-all">
+          <span class="dark:hidden text-2xl">🌙</span>
+          <span class="hidden dark:block text-2xl">☀️</span>
+        </button>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black text-indigo-600 dark:text-indigo-400 mb-4 tracking-tighter">
+        한글 낱말 퍼즐
+      </h1>
+      <div id="playerIndicator"
+        class="inline-block px-6 py-2 bg-indigo-100 dark:bg-indigo-900/40 border-2 border-indigo-600 dark:border-indigo-400 text-indigo-700 dark:text-indigo-300 rounded-full font-bold text-lg shadow-sm">
+        플레이어 1의 차례
+      </div>
+    </header>
+
+    <!-- Main game area -->
+    <main class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+
+      <!-- Player 1 Board -->
+      <section id="player1Board"
+        class="lg:col-span-1 bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-xl border-4 border-transparent transition-all duration-300">
+        <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-slate-700 dark:text-slate-200">
+          <span class="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-white text-sm">P1</span>
+          플레이어 1
+        </h2>
+        <div id="player1Attempts" class="space-y-3">
+          <!-- Attempts will be added here -->
+        </div>
+      </section>
+
+      <!-- Center Workspace -->
+      <section
+        class="lg:col-span-3 bg-white dark:bg-slate-800 rounded-[2rem] p-8 shadow-2xl border-b-8 border-indigo-200 dark:border-indigo-900/50">
+        <div class="mb-8">
+          <h2 class="text-2xl font-black text-center mb-6 text-slate-700 dark:text-slate-200">현재 작업 공간</h2>
+
+          <!-- Current guess display -->
+          <div
+            class="bg-slate-50/80 dark:bg-slate-900/30 p-8 rounded-[2.5rem] mb-8 border-2 border-slate-100 dark:border-slate-800/50 shadow-inner overflow-x-auto">
+            <div id="currentGuess" class="flex justify-center flex-nowrap gap-4 min-w-max px-4">
+              <!-- Cells will be added dynamically -->
+            </div>
+          </div>
+
+          <!-- Interaction Area -->
+          <div class="space-y-6">
+            <!-- Consonants Display Only -->
+            <div
+              class="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl border-2 border-slate-100 dark:border-slate-700">
+              <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 mb-3 uppercase tracking-widest">자음 타일</h3>
+              <div id="consonantGrid" class="flex flex-wrap gap-2 justify-center">
+                <!-- Consonant tiles will be added dynamically -->
+              </div>
+            </div>
+
+            <!-- Vowels Display Only -->
+            <div
+              class="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl border-2 border-slate-100 dark:border-slate-700">
+              <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 mb-3 uppercase tracking-widest">모음 타일</h3>
+              <div id="vowelGrid" class="flex flex-wrap gap-2 justify-center">
+                <!-- Vowel tiles will be added dynamically -->
+              </div>
+            </div>
+
+            <!-- Input Section -->
+            <div class="max-w-md mx-auto">
+              <input type="text" id="wordInput"
+                class="w-full h-16 bg-indigo-50 dark:bg-indigo-950/30 border-4 border-indigo-200 dark:border-indigo-900/50 focus:border-indigo-500 dark:focus:border-indigo-400 rounded-2xl text-center text-2xl font-bold text-indigo-900 dark:text-indigo-100 placeholder-indigo-200 dark:placeholder-indigo-800/50 outline-none transition-all"
+                placeholder="단어를 입력하세요..." maxlength="7" autocomplete="off" />
+              <p class="text-center text-slate-400 dark:text-slate-500 text-sm mt-3 font-medium">단어를 입력하고 Enter를 누르세요!
+              </p>
+            </div>
+
+            <!-- Global Submit -->
+            <button id="submitBtn"
+              class="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-xl font-black shadow-[0_6px_0_0_rgba(49,46,129,1)] active:shadow-none active:translate-y-[6px] transition-all flex items-center justify-center gap-2 mt-4">
+              제출하기 <span class="text-2xl">✓</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="messageArea" class="h-12 overflow-hidden text-center"></div>
+      </section>
+
+      <!-- Player 2 Board -->
+      <section id="player2Board"
+        class="lg:col-span-1 bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-xl border-4 border-transparent transition-all duration-300">
+        <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-slate-700 dark:text-slate-200">
+          <span class="w-8 h-8 bg-rose-500 rounded-full flex items-center justify-center text-white text-sm">P2</span>
+          플레이어 2
+        </h2>
+        <div id="player2Attempts" class="space-y-3">
+          <!-- Attempts will be added here -->
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Game Over Overlay -->
+  <div id="gameOverOverlay"
+    class="fixed inset-0 bg-indigo-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden transition-opacity duration-300">
+    <div
+      class="bg-white dark:bg-slate-800 rounded-[3rem] p-10 max-w-md w-full text-center shadow-2xl border-t-8 border-indigo-500 animate-scale-in">
+      <h2 id="gameOverTitle" class="text-5xl font-black text-indigo-600 dark:text-indigo-400 mb-2">🎉 승리!</h2>
+      <p id="gameOverMessage" class="text-slate-600 dark:text-slate-400 text-lg mb-8"></p>
+
+      <div class="bg-indigo-50 dark:bg-indigo-950/30 p-6 rounded-3xl mb-8">
+        <p class="text-sm font-bold text-indigo-400 uppercase tracking-widest mb-1">정답 단어</p>
+        <span id="targetWordDisplay"
+          class="text-3xl font-black text-indigo-900 dark:text-indigo-100 letter-spacing-lg tracking-widest"></span>
+      </div>
+
+      <button id="newGameBtn"
+        class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-xl font-black shadow-[0_6px_0_0_rgb(67,56,202)] active:shadow-none active:translate-y-[6px] transition-all">
+        새 게임 시작
+      </button>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+
+</html>

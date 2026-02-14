@@ -1,0 +1,6 @@
+{
+  "name": "piece-of-korean",
+  "version": "1.0.0",
+  "description": "한글 단어 퍼즐 게임",
+  "main": "app.js"
+}
